@@ -1,0 +1,77 @@
+# WordPress Core
+wp-admin/
+wp-includes/
+wp-content/index.php
+wp-content/languages/
+wp-content/plugins/index.php
+wp-content/themes/index.php
+
+# WordPress Configuration
+wp-config.php
+wp-config-local.php
+wp-config-production.php
+
+# WordPress Cache & Logs
+wp-content/cache/
+wp-content/backup-db/
+wp-content/backups/
+wp-content/blogs.dir/
+wp-content/upgrade/
+
+# WordPress Uploads (uncomment if you don't want to track uploads)
+# wp-content/uploads/
+
+# Plugins (uncomment to ignore all plugins)
+# wp-content/plugins/
+
+# Local development files
+.htaccess
+local-phpinfo.php
+local-xdebuginfo.php
+
+# Database files
+*.sql
+sql/
+
+# Configuration files
+conf/
+
+# Log files
+logs/
+*.log
+
+# Local environment files
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Composer
+vendor/
+composer.lock
+
+# Node modules (if using npm/yarn)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Temporary files
+*.tmp
+*.temp
