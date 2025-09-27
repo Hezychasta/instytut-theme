@@ -2,8 +2,29 @@
 
 function instytut_post_types()
 {
+    // Campus Post Type
+    register_post_type('campus', array(
+        'capability_type' => 'campus',
+        'map_meta_cap' => true,
+        'supports' => array('title', 'editor', 'excerpt'),
+        'show_in_rest' => true,
+        'rewrite' => array('slug' => 'campuses'),
+        'has_archive' => true,
+        'public' => true,
+        'labels' => array(
+            'name' => 'Campuses',
+            'add_new_item' => 'Add New Campus',
+            'edit_item' => 'Edit Campus',
+            'all_items' => 'All Campuses',
+            'singular_name' => 'Campus'
+        ),
+        'menu_icon' => 'dashicons-location-alt'
+    ));
+
     // Event Post Type
     register_post_type('event', array(
+        'capability_type' => 'event',
+        'map_meta_cap' => true,
         'supports' => array('title', 'editor', 'excerpt'),
         'show_in_rest' => true,
         'rewrite' => array('slug' => 'events'),
@@ -21,7 +42,7 @@ function instytut_post_types()
 
     // Program Post Type
     register_post_type('program', array(
-        'supports' => array('title', 'editor'),
+        'supports' => array('title'),
         'show_in_rest' => true,
         'rewrite' => array('slug' => 'programs'),
         'has_archive' => true,
@@ -38,6 +59,7 @@ function instytut_post_types()
 
     // Professor Post Type
     register_post_type('professor', array(
+        'show_in_rest' => true,
         'supports' => array('title', 'editor', 'thumbnail'),
         'show_in_rest' => true,
         'public' => true,

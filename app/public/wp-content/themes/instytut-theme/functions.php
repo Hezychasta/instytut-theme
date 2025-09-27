@@ -1,5 +1,24 @@
 <?php
 
+require get_theme_file_path('/inc/search-route.php');
+
+function instytut_custom_rest()
+{
+    register_rest_field('post', 'authorName', array(
+        'get_callback' => function () {
+            return get_the_author();
+        }
+    ));
+} {
+    register_rest_field('post', 'authorName', array(
+        'get_callback' => function () {
+            return get_the_author();
+        }
+    ));
+}
+
+add_action('rest_api_init', 'instytut_custom_rest');
+
 function pageBanner($args = NULL)
 {
 
@@ -34,11 +53,17 @@ function pageBanner($args = NULL)
 
 function instytut_files()
 {
+    wp_enqueue_script('googleMap', 'https://maps.googleapis.com/maps/api/js?key=AIzaSyDn16b-r-mrAccRFpkfGmEFDLJvzjKATvU', NULL, '1.0', true);
     wp_enqueue_script('instytut_main_js', get_theme_file_uri('/build/index.js'), array('jquery'), '1.0', true);
     wp_enqueue_style('font-awsome', '//fonts.googleapis.com/css?family=Roboto+Condensed:300,300i,400,400i,700,700i|Roboto:100,300,400,400i,700,700i');
     wp_enqueue_style('custom-google-fonts', '//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
     wp_enqueue_style('instytut_main_styles', get_theme_file_uri('/build/style-index.css'));
     wp_enqueue_style('instytut_extra_styles', get_theme_file_uri('/build/index.css'));
+
+    wp_localize_script('instytut_main_js', 'instytutData', array(
+        'root_url' => get_site_url(),
+        'nonce' => wp_create_nonce('wp_rest')
+    ));
 }
 add_action('wp_enqueue_scripts', "instytut_files");
 
@@ -77,6 +102,10 @@ function instytut_adjust_queries($query)
         $query->set('order', 'ASC');
         $query->set('posts_per_page', -1);
     }
+
+    if (!is_admin() and is_post_type_archive('campus') and $query->is_main_query()) {
+        $query->set('posts_per_page', -1);
+    }
 }
 add_action('pre_get_posts', 'instytut_adjust_queries');
 
@@ -101,3 +130,59 @@ function my_nav_menu_active_class($classes, $item)
     return $classes;
 }
 add_filter('nav_menu_css_class', 'my_nav_menu_active_class', 10, 2);
+
+function instytutMapKey($api)
+{
+    $api['key'] = 'AIzaSyDn16b-r-mrAccRFpkfGmEFDLJvzjKATvU';
+    return $api;
+}
+add_filter('acf/fields/google_map/api', 'instytutMapKey');
+
+
+// Redirect subscriber accounts out of admin onto homepage
+add_action('admin_init', 'redirectSubsToFrontend');
+
+function redirectSubsToFrontend()
+{
+    $ourCurrentUser = wp_get_current_user();
+
+    if (count($ourCurrentUser->roles) == 1 and $ourCurrentUser->roles[0] == 'subscriber') {
+        wp_redirect(home_url());
+        exit;
+    }
+}
+
+add_action('wp_loaded', 'noSubsAdminBar');
+
+function noSubsAdminBar()
+{
+    $ourCurrentUser = wp_get_current_user();
+
+    if (count($ourCurrentUser->roles) == 1 and $ourCurrentUser->roles[0] == 'subscriber') {
+        show_admin_bar(false);
+    }
+}
+
+// Customize login screen
+add_filter('login_headerurl', 'ourHeaderUrl');
+
+function ourHeaderUrl()
+{
+    return home_url();
+}
+
+add_action('login_enqueue_scripts', 'ourLoginCSS');
+
+function ourLoginCSS()
+{
+    wp_enqueue_style('font-awsome', '//fonts.googleapis.com/css?family=Roboto+Condensed:300,300i,400,400i,700,700i|Roboto:100,300,400,400i,700,700i');
+    wp_enqueue_style('custom-google-fonts', '//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
+    wp_enqueue_style('instytut_main_styles', get_theme_file_uri('/build/style-index.css'));
+    wp_enqueue_style('instytut_extra_styles', get_theme_file_uri('/build/index.css'));
+}
+add_filter('login_headertitle', 'ourLoginTitle');
+
+function ourLoginTitle()
+{
+    return get_bloginfo('name');
+}
