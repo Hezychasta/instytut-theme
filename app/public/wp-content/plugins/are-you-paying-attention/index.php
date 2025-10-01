@@ -15,15 +15,30 @@ if (! defined('ABSPATH')) {
 
 class AreYouPayingAttention
 {
-    public function __construct()
+    function __construct()
     {
-        add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'));
+        add_action('init', array($this, 'adminAssets'));
     }
 
-    public function enqueue_scripts()
+    function adminAssets()
     {
-        wp_enqueue_script('aypa-script', plugin_dir_url(__FILE__) . 'test.js', array(), '1.0.0', true);
+        wp_register_script('ournewblocktype', plugin_dir_url(__FILE__) . 'build/index.js', array('wp-blocks', 'wp-element', 'wp-editor'), filemtime(plugin_dir_path(__FILE__) . 'build/index.js'), true);
+        register_block_type('ourplugin/are-you-paying-attention', array(
+            'editor_script' => 'ournewblocktype',
+            'render_callback' => array($this, 'theHTML'),
+        ));
+    }
+
+    function theHTML($attributes)
+    {
+        ob_start();
+?>
+        <div class="paying-attention">
+            <h2>Are You Paying Attention?</h2>
+            <p>Today the sky is <?php echo esc_html($attributes['skyColor']); ?> and the grass is <?php echo esc_html($attributes['grassColor']); ?>.</p>
+        </div>
+<?php
+        return ob_get_clean();
     }
 }
-
-new AreYouPayingAttention();
+$areYouPayingAttention = new AreYouPayingAttention();
